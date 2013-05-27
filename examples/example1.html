@@ -1,0 +1,155 @@
+<html>
+<head>
+<script src="../js/raphael.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/jquery-1.9.1.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/ybyra.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+<style>
+ 
+ #div {
+    position: absolute;
+    top: 0;
+    left: 0;
+ 	width: 100%;
+ 	height: 100%;
+ 	background-color: black;
+ }
+
+</style>
+
+  <script> 
+  $(document).ready(function() {
+	      
+	ybyra.rootNode = {
+			name: 'Centro',
+			icon: "icons/comunicacao.png",
+			expanded: true,
+			children: [
+			           {
+			        	   name: "Carros", 
+			        	   icon: "icons/carros.png",
+			        	   children: [
+		        	              {name: "Clima", icon: "icons/clima.png"}			        	              
+        	               ]
+		        	   },
+			           {
+			        	   name: "Submarino", 
+			        	   icon: "icons/submarino.png",
+		        	   },
+			           {
+			        	   name: "Central", 
+			        	   icon: "icons/central.png",
+			        	   children: [
+			   			           {name: "General", icon: "icons/general.png"},
+						           {
+			   			               name: "Evento", 
+			   			               icon: "icons/evento.png",
+			   			               children: [
+											{name: "Documento", icon: "icons/documento.png"},
+											{
+											    name: "Chat", 
+											    icon: "icons/chat.png",
+					   			                children: [
+													{
+													    name: "Administracao", 
+													    icon: "icons/administracao.png",
+							   			                children: [
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"}
+				   			                            ]
+												    },
+													{
+												        name: "Anonimo", 
+												        icon: "icons/anonimo.png",
+								   			                children: [
+																		{name: "Aspectos da Aprendizagem"},
+																		{name: "Diretivas para programar\n um sistema"},
+																		{name: "Revisão Bibliográfica"}
+															]
+											        },
+													{
+													    name: "Clima", 
+													    icon: "icons/clima.png",
+							   			                children: [
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"},
+																	{name: "Documento", icon: "icons/documento.png"}
+				   			                            ]
+
+													},
+		   			                           ]
+										    }
+   			                           ]
+		   			               }			        	              
+			        	   ]
+			        	   
+		        	   },
+			           {
+			        	   name: "Email", 
+			        	   icon: "icons/email.png",
+		        	   }
+            ]
+	};
+	
+	ybyra.container = document.getElementById('div');
+	ybyra.branchColor = "green";
+	ybyra.branchWidth = 2;
+	ybyra.textColor = "green";
+	ybyra.plusIcon = "icons/plus.png";
+	ybyra.minusIcon = "icons/minus.png";
+	
+	ybyra.refreshTree();
+	
+    $(window).resize(function() {
+    	ybyra.refreshTree();
+    });
+
+  });
+  
+  </script>
+
+	<div id="div"></div>
+
+</body>
+</html>

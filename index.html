@@ -1,0 +1,175 @@
+<html>
+<head>
+<script src="js/raphael.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/jquery-1.9.1.js" type="text/javascript"
+	charset="utf-8"></script>
+<script src="js/ybyra.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+	<style>
+body {
+	font-family: Arial, Verdana;
+}
+
+#div {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #cfe5c7;
+}
+
+#divContent {
+	position: absolute;
+	top: 8%;
+	left: 8%;
+	width: 80%;
+	height: 80%;
+	background-color: white;
+	border-radius: 20px;
+	padding: 1%;
+}
+
+#divContentClose {
+	position: absolute;
+	top: 9%;
+	left: 85%;
+	width: 4%;
+	height: 4%;
+	cursor: pointer;
+	background: url(icons/minus.png) center no-repeat;
+}
+</style>
+
+	<script>
+        $(document).ready(function() {
+
+            $("#divContent").hide();
+            $("#divContentClose").hide();
+            $("#divContentClose").click(function() {
+                $("#divContent").hide();
+                $("#divContentClose").hide();
+            });
+
+            ybyra.rootNode = {
+                name : 'Ybyrá',
+                icon : "food/cafe.png",
+                expanded : true,
+                children : [ {
+                    name : "What is it?",
+                    icon : "food/mingau.png",
+                    htmlToLoad : "what-is-it.html"
+                }, {
+                    name : "How to use it?",
+                    icon : "food/sorvete.png",
+                    htmlToLoad : "how-to-use-it.html"
+                }, {
+                    name : "License",
+                    icon : "food/cerejas.png",
+                    externalLink : "js/gpl_license.txt"
+                }, {
+                    name : "Social",
+                    icon : "food/sanduba.png",
+                    children : [ {
+                        name : "Facebook Page",
+                    },{
+                        name : "Facebook Group",
+                    }, ]
+                }, {
+                    name : "Documentation",
+                    icon : "food/bolo.png",
+                    children : [ {
+                        name : "Examples",
+                        icon : "food/frutas.png",
+                        children : [ {
+                            name : "Simple Tree Test",
+                            externalLink : "examples/example1.html"
+                        }, ]
+
+                    }, {
+                        name : "Reference <TODO>"
+                    } ]
+
+                }, {
+                    name : "Download",
+                    icon : "food/chocolate.png",
+                    children : [ {
+                        name : "Version 0.9 beta",
+                        children : [ {
+                            name : "Minified  <TODO>"
+                        }, {
+                            name : "Uncompressed source",
+                            externalLink: "js/ybyra.js"
+                        }, ]
+
+                    } ]
+                }, {
+                    name : "Cool Links",
+                    icon : "food/pipoca.png",
+                    children : [ {
+                        name : "Raphaël",
+                        icon : "icons/raphael.png",
+                        externalLink : "http://raphaeljs.com"
+                    }, {
+                        name : "Manish",
+                        icon : "icons/manish.png",
+                        externalLink : "http://www.manish.com.br"
+                    }, {
+                        name : "Mastersoft-iT",
+						icon : "icons/mastersoft-it.png",
+                        externalLink : "http://www.mastersoft-it.com.br"
+                    }, {
+                        name : "jQuery",
+                        icon : "icons/logo-jquery.png",
+                        labelPosition : {
+                            x : 0,
+                            y : -30
+                        },
+                        externalLink : "http://jquery.com"
+                    }, {
+                        name : "HyperTree Java\nLibrary",
+                        externalLink : "http://hypertree.sourceforge.net"
+                    }, ]
+                } ]
+            };
+
+            ybyra.container = document.getElementById('div');
+            ybyra.branchColor = "#ccbca1";
+            ybyra.textColor = "#30364b";
+            ybyra.labelBorderColor = "#ccbca1";
+            ybyra.iconSize = 120;
+            ybyra.textSize = 18;
+            ybyra.plusIcon = "icons/plus.png";
+            ybyra.minusIcon = "icons/minus.png";
+
+            ybyra.refreshTree();
+
+            $(window).resize(function() {
+                ybyra.refreshTree();
+            });
+
+            ybyra.click = function(node) {
+                if (node.htmlToLoad != null) {
+                    $("#divContent").load(node.htmlToLoad);
+                    $("#divContent").show();
+                    $("#divContentClose").show();
+                }
+
+                if (node.externalLink != null) {
+                    window.open(node.externalLink);
+                }
+
+            };
+
+        });
+    </script>
+
+	<div id="div"></div>
+	<div id="divContent"></div>
+	<div id="divContentClose"></div>
+
+
+</body>
+</html>
