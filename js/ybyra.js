@@ -131,8 +131,9 @@ var HTree = {
     },
 
     /**
-     * Layout this node in the hyperbolic space. First set the point at the right distance, then translate by father's
-     * coordinates. Then, compute the right angle and the right width. Thanks to: Christophe Bouthier
+     * Layout this node in the hyperbolic space. First set the point at the
+     * right distance, then translate by father's coordinates. Then, compute the
+     * right angle and the right width. Thanks to: Christophe Bouthier
      * 
      * @param angle
      *            the angle from the x axis (bold as love)
@@ -341,7 +342,8 @@ var HTree = {
 
             this.drawNodeLabel(node);
 
-            // TODO: this smells.. but we don't have real groups in Raphael yet :-(
+            // TODO: this smells.. but we don't have real groups in Raphael yet
+            // :-(
             var borderAction = ybyra.paper.rect(0, 0, ybyra.labelBorderWidth, ybyra.labelBorderHeight, 30);
             borderAction.attr("fill", ybyra.labelBorderColor);
             borderAction.attr("stroke", ybyra.labelBorderColor);
@@ -596,7 +598,8 @@ var HTree = {
 };
 
 /**
- * The HTCoordE class implements the coordinates of a point in the Euclidian space. 
+ * The HTCoordE class implements the coordinates of a point in the Euclidian
+ * space.
  */
 var HTCoordE = {
 
@@ -615,7 +618,8 @@ var HTCoordE = {
     },
 
     /**
-     * Translate this Euclidian point by the coordinates of the given Euclidian point.
+     * Translate this Euclidian point by the coordinates of the given Euclidian
+     * point.
      * 
      * @param o
      *            the coordinates to translate
@@ -646,7 +650,8 @@ var HTCoordE = {
         var zc = {};
         if ((Math.abs(this.d(za)) < EPSILON) || // za == origin
         (Math.abs(this.d(zb)) < EPSILON) || // zb == origin
-        (Math.abs((za.x / zb.x) - (za.y / zb.y)) < EPSILON)) {// za = lambda.zb
+        (Math.abs((za.x / zb.x) - (za.y / zb.y)) < EPSILON)) {// za =
+                                                                // lambda.zb
             zc.isLine = true; // type = LINE;
 
         } else {
@@ -673,8 +678,8 @@ var HTCoordE = {
     },
 
     /**
-     * Returns the angle between the x axis and the line passing throught the origin O and this point. The angle is
-     * given in radians.
+     * Returns the angle between the x axis and the line passing throught the
+     * origin O and this point. The angle is given in radians.
      * 
      * @return the angle, in radians
      */
@@ -712,8 +717,9 @@ var HTCoordE = {
 };
 
 /**
- * The HTCoordS class implements the coordinates of a point in the Screen space. The screen space is represented with
- * finite pixels. Thanks to: Christophe Bouthier
+ * The HTCoordS class implements the coordinates of a point in the Screen space.
+ * The screen space is represented with finite pixels. Thanks to: Christophe
+ * Bouthier
  */
 var HTCoordS = {
 
@@ -757,7 +763,8 @@ var HTCoordS = {
 };
 
 /**
- * The HTTransformation class implements a isometrie transformation in the hyperbolic space. 
+ * The HTTransformation class implements a isometrie transformation in the
+ * hyperbolic space.
  */
 var HTTransformation = {
 
