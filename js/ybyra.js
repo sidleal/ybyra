@@ -92,6 +92,7 @@ var HTree = {
         var back = ybyra.paper.rect(0, 0, ybyra.screenWidth, ybyra.screenHeight);
         back.attr("fill", "white");
         back.attr("fill-opacity", 0.01);
+        back.attr("stroke", "transparent");
 
         back.drag(function(mx, my) {
             var newRootPointS = {
