@@ -63,6 +63,7 @@ var ybyra = {
         bottom : 0
     },
     zoom : 0,
+	animateLinks: false,
 
     refreshTree : function() {
         this.screenWidth = this.container.clientWidth;
@@ -433,19 +434,21 @@ var HTree = {
         var links = ybyra.paper.set();
         this.groupLinks(links, node);
 
-        var animBack = Raphael.animation({
-            opacity : 1,
-            easing : '<'
-        }, 3e3, function() {
-            links.stop().animate(anim);
-        });
-        var anim = Raphael.animation({
-            opacity : 0.3,
-            easing : '<'
-        }, 3e3, function() {
-            links.stop().animate(animBack);
-        });
-        links.animate(anim);
+		if (ybyra.animateLinks) {
+			var animBack = Raphael.animation({
+				opacity : 1,
+				easing : '<'
+			}, 3e3, function() {
+				links.stop().animate(anim);
+			});
+			var anim = Raphael.animation({
+				opacity : 0.3,
+				easing : '<'
+			}, 3e3, function() {
+				links.stop().animate(animBack);
+			});
+			links.animate(anim);
+		}
         links.toBack();
     },
 

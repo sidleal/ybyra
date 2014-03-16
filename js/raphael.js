@@ -1,5 +1,5 @@
 // ┌────────────────────────────────────────────────────────────────────┐ \\
-// │ Raphaël 2.1.0 - JavaScript Vector Library                          │ \\
+// │ Raphaël 2.1.2 - JavaScript Vector Library                          │ \\
 // ├────────────────────────────────────────────────────────────────────┤ \\
 // │ Copyright © 2008-2012 Dmitry Baranovskiy (http://raphaeljs.com)    │ \\
 // │ Copyright © 2008-2012 Sencha Labs (http://sencha.com)              │ \\
@@ -376,14 +376,15 @@
         return "You are running Eve " + version;
     };
     (typeof module != "undefined" && module.exports) ? (module.exports = eve) : (typeof define != "undefined" ? (define("eve", [], function() { return eve; })) : (glob.eve = eve));
-})(this);
+})(window || this);
 // ┌─────────────────────────────────────────────────────────────────────┐ \\
-// │ "Raphaël 2.1.0" - JavaScript Vector Library                         │ \\
+// │ "Raphaël 2.1.2" - JavaScript Vector Library                         │ \\
 // ├─────────────────────────────────────────────────────────────────────┤ \\
 // │ Copyright (c) 2008-2011 Dmitry Baranovskiy (http://raphaeljs.com)   │ \\
 // │ Copyright (c) 2008-2011 Sencha Labs (http://sencha.com)             │ \\
 // │ Licensed under the MIT (http://raphaeljs.com/license.html) license. │ \\
 // └─────────────────────────────────────────────────────────────────────┘ \\
+
 (function (glob, factory) {
     // AMD support
     if (typeof define === "function" && define.amd) {
@@ -464,7 +465,7 @@
             }
         }
     }
-    R.version = "2.1.0";
+    R.version = "2.1.2";
     R.eve = eve;
     var loaded,
         separator = /[, ]+/,
@@ -792,7 +793,7 @@
     };
 
     function clone(obj) {
-        if (Object(obj) !== obj) {
+        if (typeof obj == "function" || Object(obj) !== obj) {
             return obj;
         }
         var res = new obj.constructor;
@@ -882,7 +883,7 @@
         }
         return value;
     };
-    
+
     /*\
      * Raphael.createUUID
      [ method ]
@@ -977,7 +978,7 @@
             g /= 255;
             b /= 255;
         }
-        
+
         return [r, g, b];
     },
     packageRGB = function (r, g, b, o) {
@@ -994,7 +995,7 @@
         R.is(o, "finite") && (rgb.opacity = o);
         return rgb;
     };
-    
+
     /*\
      * Raphael.color
      [ method ]
@@ -1237,7 +1238,7 @@
         g.doc.body.appendChild(img);
         img.src = src;
     };
-    
+
     function clrToString() {
         return this.hex;
     }
@@ -1469,7 +1470,7 @@
         if (pth.arr) {
             return pathClone(pth.arr);
         }
-        
+
         var paramCounts = {a: 7, c: 6, h: 1, l: 2, m: 2, r: 4, q: 4, s: 4, t: 2, v: 1, z: 0},
             data = [];
         if (R.is(pathString, array) && R.is(pathString[0], array)) { // rough assumption
@@ -1794,8 +1795,8 @@
         }
         var l1 = bezlen.apply(0, bez1),
             l2 = bezlen.apply(0, bez2),
-            n1 = ~~(l1 / 5),
-            n2 = ~~(l2 / 5),
+            n1 = mmax(~~(l1 / 5), 1),
+            n2 = mmax(~~(l2 / 5), 1),
             dots1 = [],
             dots2 = [],
             xy = {},
@@ -1824,15 +1825,15 @@
                     xy[is.x.toFixed(4)] = is.y.toFixed(4);
                     var t1 = di.t + abs((is[ci] - di[ci]) / (di1[ci] - di[ci])) * (di1.t - di.t),
                         t2 = dj.t + abs((is[cj] - dj[cj]) / (dj1[cj] - dj[cj])) * (dj1.t - dj.t);
-                    if (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1) {
+                    if (t1 >= 0 && t1 <= 1.001 && t2 >= 0 && t2 <= 1.001) {
                         if (justCount) {
                             res++;
                         } else {
                             res.push({
                                 x: is.x,
                                 y: is.y,
-                                t1: t1,
-                                t2: t2
+                                t1: mmin(t1, 1),
+                                t2: mmin(t2, 1)
                             });
                         }
                     }
@@ -1977,7 +1978,7 @@
             return {x: 0, y: 0, width: 0, height: 0, x2: 0, y2: 0};
         }
         path = path2curve(path);
-        var x = 0, 
+        var x = 0,
             y = 0,
             X = [],
             Y = [],
@@ -2360,12 +2361,12 @@
                 p2 = path2 && pathToAbsolute(path2),
                 attrs = {x: 0, y: 0, bx: 0, by: 0, X: 0, Y: 0, qx: null, qy: null},
                 attrs2 = {x: 0, y: 0, bx: 0, by: 0, X: 0, Y: 0, qx: null, qy: null},
-                processPath = function (path, d) {
-                    var nx, ny;
+                processPath = function (path, d, pcom) {
+                    var nx, ny, tq = {T:1, Q:1};
                     if (!path) {
                         return ["C", d.x, d.y, d.x, d.y, d.x, d.y];
                     }
-                    !(path[0] in {T:1, Q:1}) && (d.qx = d.qy = null);
+                    !(path[0] in tq) && (d.qx = d.qy = null);
                     switch (path[0]) {
                         case "M":
                             d.X = path[1];
@@ -2375,13 +2376,25 @@
                             path = ["C"][concat](a2c[apply](0, [d.x, d.y][concat](path.slice(1))));
                             break;
                         case "S":
-                            nx = d.x + (d.x - (d.bx || d.x));
-                            ny = d.y + (d.y - (d.by || d.y));
+                            if (pcom == "C" || pcom == "S") { // In "S" case we have to take into account, if the previous command is C/S.
+                                nx = d.x * 2 - d.bx;          // And reflect the previous
+                                ny = d.y * 2 - d.by;          // command's control point relative to the current point.
+                            }
+                            else {                            // or some else or nothing
+                                nx = d.x;
+                                ny = d.y;
+                            }
                             path = ["C", nx, ny][concat](path.slice(1));
                             break;
                         case "T":
-                            d.qx = d.x + (d.x - (d.qx || d.x));
-                            d.qy = d.y + (d.y - (d.qy || d.y));
+                            if (pcom == "Q" || pcom == "T") { // In "T" case we have to take into account, if the previous command is Q/T.
+                                d.qx = d.x * 2 - d.qx;        // And make a reflection similar
+                                d.qy = d.y * 2 - d.qy;        // to case "S".
+                            }
+                            else {                            // or something else or nothing
+                                d.qx = d.x;
+                                d.qy = d.y;
+                            }
                             path = ["C"][concat](q2c(d.x, d.y, d.qx, d.qy, path[1], path[2]));
                             break;
                         case "Q":
@@ -3029,7 +3042,7 @@
                 s.scalex = +s.scalex.toFixed(4);
                 s.scaley = +s.scaley.toFixed(4);
                 s.rotate = +s.rotate.toFixed(4);
-                return  (s.dx || s.dy ? "t" + [s.dx, s.dy] : E) + 
+                return  (s.dx || s.dy ? "t" + [s.dx, s.dy] : E) +
                         (s.scalex != 1 || s.scaley != 1 ? "s" + [s.scalex, s.scaley, 0, 0] : E) +
                         (s.rotate ? "r" + [s.rotate, 0, 0] : E);
             } else {
@@ -3057,7 +3070,7 @@
     } else {
         paperproto.safari = fun;
     }
- 
+
     var preventDefault = function () {
         this.returnValue = false;
     },
@@ -3070,19 +3083,31 @@
     stopTouch = function () {
         return this.originalEvent.stopPropagation();
     },
+    getEventPosition = function (e) {
+        var scrollY = g.doc.documentElement.scrollTop || g.doc.body.scrollTop,
+            scrollX = g.doc.documentElement.scrollLeft || g.doc.body.scrollLeft;
+
+        return {
+            x: e.clientX + scrollX,
+            y: e.clientY + scrollY
+        };
+    },
     addEvent = (function () {
         if (g.doc.addEventListener) {
             return function (obj, type, fn, element) {
-                var realName = supportsTouch && touchMap[type] ? touchMap[type] : type,
-                    f = function (e) {
-                        var scrollY = g.doc.documentElement.scrollTop || g.doc.body.scrollTop,
-                            scrollX = g.doc.documentElement.scrollLeft || g.doc.body.scrollLeft,
-                            x = e.clientX + scrollX,
-                            y = e.clientY + scrollY;
-                    if (supportsTouch && touchMap[has](type)) {
+                var f = function (e) {
+                    var pos = getEventPosition(e);
+                    return fn.call(element, e, pos.x, pos.y);
+                };
+                obj.addEventListener(type, f, false);
+
+                if (supportsTouch && touchMap[type]) {
+                    var _f = function (e) {
+                        var pos = getEventPosition(e),
+                            olde = e;
+
                         for (var i = 0, ii = e.targetTouches && e.targetTouches.length; i < ii; i++) {
                             if (e.targetTouches[i].target == obj) {
-                                var olde = e;
                                 e = e.targetTouches[i];
                                 e.originalEvent = olde;
                                 e.preventDefault = preventTouch;
@@ -3090,12 +3115,18 @@
                                 break;
                             }
                         }
-                    }
-                    return fn.call(element, e, x, y);
-                };
-                obj.addEventListener(realName, f, false);
+
+                        return fn.call(element, e, pos.x, pos.y);
+                    };
+                    obj.addEventListener(touchMap[type], _f, false);
+                }
+
                 return function () {
-                    obj.removeEventListener(realName, f, false);
+                    obj.removeEventListener(type, f, false);
+
+                    if (supportsTouch && touchMap[type])
+                        obj.removeEventListener(touchMap[type], f, false);
+
                     return true;
                 };
             };
@@ -3130,7 +3161,7 @@
             j = drag.length;
         while (j--) {
             dragi = drag[j];
-            if (supportsTouch) {
+            if (supportsTouch && e.touches) {
                 var i = e.touches.length,
                     touch;
                 while (i--) {
@@ -3205,7 +3236,7 @@
      - handler (function) #optional handler for the event
      = (object) @Element
     \*/
-    
+
     /*\
      * Element.dblclick
      [ method ]
@@ -3224,7 +3255,7 @@
      - handler (function) #optional handler for the event
      = (object) @Element
     \*/
-    
+
     /*\
      * Element.mousedown
      [ method ]
@@ -3243,7 +3274,7 @@
      - handler (function) #optional handler for the event
      = (object) @Element
     \*/
-    
+
     /*\
      * Element.mousemove
      [ method ]
@@ -3262,7 +3293,7 @@
      - handler (function) #optional handler for the event
      = (object) @Element
     \*/
-    
+
     /*\
      * Element.mouseout
      [ method ]
@@ -3281,7 +3312,7 @@
      - handler (function) #optional handler for the event
      = (object) @Element
     \*/
-    
+
     /*\
      * Element.mouseover
      [ method ]
@@ -3300,7 +3331,7 @@
      - handler (function) #optional handler for the event
      = (object) @Element
     \*/
-    
+
     /*\
      * Element.mouseup
      [ method ]
@@ -3319,7 +3350,7 @@
      - handler (function) #optional handler for the event
      = (object) @Element
     \*/
-    
+
     /*\
      * Element.touchstart
      [ method ]
@@ -3338,7 +3369,7 @@
      - handler (function) #optional handler for the event
      = (object) @Element
     \*/
-    
+
     /*\
      * Element.touchmove
      [ method ]
@@ -3357,7 +3388,7 @@
      - handler (function) #optional handler for the event
      = (object) @Element
     \*/
-    
+
     /*\
      * Element.touchend
      [ method ]
@@ -3376,7 +3407,7 @@
      - handler (function) #optional handler for the event
      = (object) @Element
     \*/
-    
+
     /*\
      * Element.touchcancel
      [ method ]
@@ -3418,7 +3449,7 @@
             };
         })(events[i]);
     }
-    
+
     /*\
      * Element.data
      [ method ]
@@ -3432,6 +3463,8 @@
      = (object) @Element
      * or, if value is not specified:
      = (any) value
+     * or, if key and value are not specified:
+     = (object) Key/value pairs for all the data associated with the element.
      > Usage
      | for (var i = 0, i < 5, i++) {
      |     paper.circle(10 + 15 * i, 10, 10)
@@ -3444,6 +3477,9 @@
     \*/
     elproto.data = function (key, value) {
         var data = eldata[this.id] = eldata[this.id] || {};
+        if (arguments.length == 0) {
+            return data;
+        }
         if (arguments.length == 1) {
             if (R.is(key, "object")) {
                 for (var i in key) if (key[has](i)) {
@@ -3548,11 +3584,25 @@
     elproto.drag = function (onmove, onstart, onend, move_scope, start_scope, end_scope) {
         function start(e) {
             (e.originalEvent || e).preventDefault();
-            var scrollY = g.doc.documentElement.scrollTop || g.doc.body.scrollTop,
+            var x = e.clientX,
+                y = e.clientY,
+                scrollY = g.doc.documentElement.scrollTop || g.doc.body.scrollTop,
                 scrollX = g.doc.documentElement.scrollLeft || g.doc.body.scrollLeft;
-            this._drag.x = e.clientX + scrollX;
-            this._drag.y = e.clientY + scrollY;
             this._drag.id = e.identifier;
+            if (supportsTouch && e.touches) {
+                var i = e.touches.length, touch;
+                while (i--) {
+                    touch = e.touches[i];
+                    this._drag.id = touch.identifier;
+                    if (touch.identifier == this._drag.id) {
+                        x = touch.clientX;
+                        y = touch.clientY;
+                        break;
+                    }
+                }
+            }
+            this._drag.x = x + scrollX;
+            this._drag.y = y + scrollY;
             !drag.length && R.mousemove(dragMove).mouseup(dragUp);
             drag.push({el: this, move_scope: move_scope, start_scope: start_scope, end_scope: end_scope});
             onstart && eve.on("raphael.drag.start." + this.id, onstart);
@@ -4013,7 +4063,10 @@
      = (boolean) `true` if point inside the shape
     \*/
     elproto.isPointInside = function (x, y) {
-        var rp = this.realPath = this.realPath || getPath[this.type](this);
+        var rp = this.realPath = getPath[this.type](this);
+        if (this.attr('transform') && this.attr('transform').length) {
+            rp = R.transformPath(rp, this.attr('transform'));
+        }
         return R.isPointInsidePath(rp, x, y);
     };
     /*\
@@ -4239,11 +4292,16 @@
      = (number) length.
     \*/
     elproto.getTotalLength = function () {
-        if (this.type != "path") {return;}
+        var path = this.getPath();
+        if (!path) {
+            return;
+        }
+
         if (this.node.getTotalLength) {
             return this.node.getTotalLength();
         }
-        return getTotalLength(this.attrs.path);
+
+        return getTotalLength(path);
     };
     /*\
      * Element.getPointAtLength
@@ -4263,8 +4321,34 @@
      o }
     \*/
     elproto.getPointAtLength = function (length) {
-        if (this.type != "path") {return;}
-        return getPointAtLength(this.attrs.path, length);
+        var path = this.getPath();
+        if (!path) {
+            return;
+        }
+
+        return getPointAtLength(path, length);
+    };
+    /*\
+     * Element.getPath
+     [ method ]
+     **
+     * Returns path of the element. Only works for elements of “path” type and simple elements like circle.
+     = (object) path
+     **
+    \*/
+    elproto.getPath = function () {
+        var path,
+            getPath = R._getPath[this.type];
+        
+        if (this.type == "text" || this.type == "set") {
+            return;
+        }
+
+        if (getPath) {
+            path = getPath(this);
+        }
+
+        return path;
     };
     /*\
      * Element.getSubpath
@@ -4280,8 +4364,12 @@
      = (string) pathstring for the segment
     \*/
     elproto.getSubpath = function (from, to) {
-        if (this.type != "path") {return;}
-        return R.getSubpath(this.attrs.path, from, to);
+        var path = this.getPath();
+        if (!path) {
+            return;
+        }
+
+        return R.getSubpath(path, from, to);
     };
     /*\
      * Raphael.easing_formulas
@@ -4648,7 +4736,7 @@
      **
      = (object) new altered Animation object
     \*/
-    Animation.prototype.repeat = function (times) { 
+    Animation.prototype.repeat = function (times) {
         var a = new Animation(this.anim, this.ms);
         a.del = this.del;
         a.times = math.floor(mmax(times, 0)) || 1;
@@ -5247,6 +5335,7 @@
         item = this.items[--i].animate(anim);
         while (i--) {
             this.items[i] && !this.items[i].removed && this.items[i].animateWith(item, anim, anim);
+            (this.items[i] && !this.items[i].removed) || len--;
         }
         return this;
     };
@@ -5304,6 +5393,31 @@
             }
         });
         return ret;
+    };
+
+
+    /*\
+     * Set.isPointInside
+     [ method ]
+     **
+     * Determine if given point is inside this set’s elements
+     **
+     > Parameters
+     **
+     - x (number) x coordinate of the point
+     - y (number) y coordinate of the point
+     = (boolean) `true` if point is inside any of the set's elements
+     \*/
+    setproto.isPointInside = function (x, y) {
+        var isPointInside = false;
+        this.forEach(function (el) {
+            if (el.isPointInside(x, y)) {
+                console.log('runned');
+                isPointInside = true;
+                return false; // stop loop
+            }
+        });
+        return isPointInside;
     };
 
     /*\
@@ -5966,6 +6080,11 @@
                         break;
                     case "href":
                     case "title":
+                        var hl = $("title");
+                        var val = R._g.doc.createTextNode(value);
+                        hl.appendChild(val);
+                        node.appendChild(hl);
+                        break;
                     case "target":
                         var pn = node.parentNode;
                         if (pn.tagName.toLowerCase() != "a") {
@@ -6786,6 +6905,7 @@
             }
             t.node.removeAttribute("filter");
         }
+        return t;
     };
     R._engine.circle = function (svg, x, y, r) {
         var el = $("circle");
@@ -7191,6 +7311,7 @@
                 rx = +a.rx || +a.r || 0,
                 ry = +a.ry || +a.r || 0;
             node.path = R.format("ar{0},{1},{2},{3},{4},{1},{4},{1}x", round((cx - rx) * zoom), round((cy - ry) * zoom), round((cx + rx) * zoom), round((cy + ry) * zoom), round(cx * zoom));
+            o._.dirty = 1;
         }
         if ("clip-rect" in params) {
             var rect = Str(params["clip-rect"]).split(separator);
@@ -7312,7 +7433,7 @@
             params["stroke-linejoin"] && (stroke.joinstyle = params["stroke-linejoin"] || "miter");
             stroke.miterlimit = params["stroke-miterlimit"] || 8;
             params["stroke-linecap"] && (stroke.endcap = params["stroke-linecap"] == "butt" ? "flat" : params["stroke-linecap"] == "square" ? "square" : "round");
-            if (params["stroke-dasharray"]) {
+            if ("stroke-dasharray" in params) {
                 var dasharray = {
                     "-": "shortdash",
                     ".": "shortdot",
@@ -7480,7 +7601,7 @@
             split,
             isGrad = ~Str(this.attrs.fill).indexOf("-"),
             isPatt = !Str(this.attrs.fill).indexOf("url(");
-        matrix.translate(-.5, -.5);
+        matrix.translate(1, 1);
         if (isPatt || isGrad || this.type == "image") {
             skew.matrix = "1 0 0 1";
             skew.offset = "0 0";
@@ -7721,6 +7842,7 @@
             s.margin = 0;
             delete this.attrs.blur;
         }
+        return this;
     };
 
     R._engine.path = function (pathString, vml) {
