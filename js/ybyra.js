@@ -64,6 +64,7 @@ var ybyra = {
     },
     zoom : 0,
 	animateLinks: false,
+	mouseWheelZoomEnabled: true,
 
     refreshTree : function() {
         this.screenWidth = this.container.clientWidth;
@@ -114,12 +115,20 @@ var HTree = {
     },
 
     mouseWheelHandler : function(event) {
-        if (event.wheelDelta > 0) {
-            ybyra.zoom += 0.1;
-        } else {
-            ybyra.zoom -= 0.1;
-        }
-        ybyra.refreshTree();
+    	if (ybyra.mouseWheelZoomEnabled) {
+	        if (event.wheelDelta > 0) {
+	            ybyra.zoom += 0.1;
+	        } else {
+	            ybyra.zoom -= 0.1;
+	        }
+	        if (ybyra.zoom < -0.3) {
+	        	ybyra.zoom = -0.3;
+	        }
+	        if (ybyra.zoom > 1.5) {
+	        	ybyra.zoom = 1.5;
+	        }
+	        ybyra.refreshTree();
+    	}
     },
 
     /**
